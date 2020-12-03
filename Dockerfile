@@ -1,5 +1,12 @@
 FROM ubuntu:20.04
 
+# Environment variables
+ENV OWNER="" \
+    REPO="" \
+    PAT="" \
+    NAME="" \
+    REGISTER_ONLY=""
+
 # Add user for github's runner
 RUN useradd -m actions
 
@@ -19,12 +26,13 @@ RUN apt install -y \
     libkrb5-3 \
     zlib1g \
     libssl1.1 \
-    libicu66
+    libicu66 && \
+    apt clean
 
 # Install github's runner
 USER actions
 WORKDIR /home/actions
-ARG GITHUB_RUNNER_VERSION="2.273.4"
+ARG GITHUB_RUNNER_VERSION="2.274.2"
 RUN curl -o actions.tar.gz -L \
     "https://github.com/actions/runner/releases/download/v${GITHUB_RUNNER_VERSION}/actions-runner-linux-x64-${GITHUB_RUNNER_VERSION}.tar.gz" && \
     tar -zxf actions.tar.gz && \
@@ -33,4 +41,4 @@ RUN curl -o actions.tar.gz -L \
 # Entrypoint
 COPY entrypoint.sh .
 
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/bash", "./entrypoint.sh"]

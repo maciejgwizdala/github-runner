@@ -1,41 +1,9 @@
 #!/usr/bin/env bash
 
-POSITIONAL=()
-while [[ $# -gt 0 ]]; do
-    key="$1"
-    case $key in
-        -o|--owner)
-            OWNER="$2"
-            shift
-            shift
-        ;;
-        -r|--repo)
-            REPO="$2"
-            shift
-            shift
-        ;;
-        -p|--pat)
-            PAT="$2"
-            shift
-            shift
-        ;;
-        -n|--name)
-            NAME="$2"
-            shift
-            shift
-        ;;
-        --register-only)
-            REGISTER_ONLY=YES
-            shift
-        ;;
-        *)
-            POSITIONAL+=("$1")
-            shift
-        ;;
-    esac
-done
-set -- "${POSITIONAL[@]}"
-[ -z "$NAME" ] && NAME=$(hostname)
+function checkvar() {
+    eval VAR='$'$1
+    [ -z "$VAR" ] && echo $1 env var is required && exit 1
+}
 
 function gettoken() {
     TOKEN=$(curl -s -XPOST \
@@ -54,6 +22,10 @@ function configure() {
     ./config.sh --unattended --url https://github.com/${OWNER}/${REPO} --token ${TOKEN} --name ${NAME}
 }
 
+[ -z "$NAME" ] && NAME=$(hostname)
+checkvar OWNER
+checkvar REPO
+checkvar PAT
 configure
 
 if [ -z ${REGISTER_ONLY} ]; then
