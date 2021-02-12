@@ -1,0 +1,10 @@
+name: Test env vars
+on: workflow_dispatch
+jobs:
+  vars:
+    name: Checking environment variables
+    runs-on: [ ubuntu-20.04 ] 
+
+    steps:
+      - name: Print env vars
+        run: echo $HOME $GITHUB_WORKSPACE $GITHUB_EVENT_PATH
